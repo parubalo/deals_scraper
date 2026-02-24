@@ -2,24 +2,26 @@ name: Daily Deal Scraper
 
 on:
   schedule:
-    - cron: '0 23 * * *' # 6:00 PM EST is 23:00 (11:00 PM) UTC
-  workflow_dispatch:      # Allows you to run it manually from the "Actions" tab
+    # 6:00 PM EST is 23:00 UTC
+    - cron: '0 23 * * *' 
+  workflow_dispatch: # Allows you to click "Run workflow" for testing
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: |
-          pip install requests pandas pytz
+        run: pip install requests pandas pytz
 
       - name: Run Scraper
         env:
@@ -32,5 +34,5 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add deals_history.csv
-          git commit -m "Auto-update: $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git commit -m "Scrape update: $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push
